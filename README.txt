@@ -1,5 +1,7 @@
 # UniOps: Smart Campus Operations System
 
+Backend: Python, Django 5.2.8 Frontend: HTMX, Tailwind CSS Database: SQLite Asset Management: Pillow
+
 UniOps is a comprehensive, role-based campus management web application designed to streamline university operations. Built with Django, it provides a centralized platform for handling room inventory, scheduling academic spaces, tracking facility maintenance, and managing student complaints.
 
 By leveraging **HTMX** and **Tailwind CSS**, the system delivers a fast, single-page-application (SPA) feel while maintaining the robust security and architecture of a server-rendered Django backend.
@@ -39,14 +41,14 @@ This project is actively maintained. Recent architectural improvements include:
 * **Dashboard Pagination:** Integration of Django's `Paginator` on the Admin dashboard to lazy-load ticket histories, ensuring zero memory bottlenecks at enterprise scale.
 * **Production Asset Pipeline:** Transitioning from the Tailwind CDN to compiled CSS using the integrated `django-tailwind` package for optimized production loading times.
 
-## Tech Stack
+## Local Setup & Installation
 
-* Python, Django 5.2.8
-* HTMX (for dynamic, no-reload interactions), Tailwind CSS
-* SQLite (Development) / MySQL Ready (`mysqlclient` configured)
-* Pillow (for image uploads)
-
-## Clone the repository
 ```bash
 git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/uniops.git)
 cd uniops
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
