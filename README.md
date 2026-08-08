@@ -67,7 +67,7 @@ This project is actively maintained. Recent architectural improvements include:
     ```
 
 ## Clone the repository
-    ```bash
+```bash
     git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/ uniops.git)
     cd uniops
-    ```
+```
