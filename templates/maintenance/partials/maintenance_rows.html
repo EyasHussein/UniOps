@@ -1,0 +1,75 @@
+{% regroup maintenance_requests by user as maintenance_groups %}
+{% for group in maintenance_groups %}
+    <tr class="bg-amber-50/70">
+        <td colspan="7" class="py-2 px-4 text-xs font-black text-amber-700 uppercase tracking-widest">
+            <span class="inline-flex items-center gap-2">
+                <span class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-[10px] font-black">👤</span>
+                {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+            </span>
+        </td>
+    </tr>
+    {% for main in group.list %}
+    <tr class="hover:bg-slate-50/80 transition-colors">
+        <td class="py-3 px-4">
+            <div class="font-semibold text-slate-800">{{ main.user }}</div>
+            <div class="text-xs text-slate-400">{{ main.email }}</div>
+            <div class="text-xs text-slate-400 italic mt-0.5">{{ main.department }}</div>
+        </td>
+        <td class="py-3 px-4">
+            <span class="font-semibold text-slate-800 capitalize">{{ main.maintenance_type }}</span>
+            <div class="text-xs text-slate-400 italic mt-0.5">{{ main.classroom }}</div>
+        </td>
+        <td class="py-3 px-4 text-center">
+            {% if main.priority == "high" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>High
+                </span>
+            {% elif main.priority == "medium" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Medium
+                </span>
+            {% else %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Low
+                </span>
+            {% endif %}
+        </td>
+        <td class="py-3 px-4 text-center">
+            {% if main.status == "pending" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">Pending</span>
+            {% elif main.status == "assigned" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase">Assigned</span>
+            {% elif main.status == "under repair" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-violet-50 text-violet-700 border border-violet-200 uppercase">Under Repair</span>
+            {% elif main.status == "fixed" %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">Fixed</span>
+            {% endif %}
+        </td>
+        <td class="py-3 px-4 text-center">
+            <form action="{% url 'archive_main' main.id %}" method="POST" class="inline" onsubmit="return confirm('Archive this request?')">
+                {% csrf_token %}
+                <button class="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase tracking-wide transition-colors">Archive</button>
+            </form>
+        </td>
+        <td class="py-3 px-4">
+            <form action="{% url 'update_main_status' main.id %}" method="POST" class="flex items-center gap-1.5">
+                {% csrf_token %}
+                <select name="new_status" class="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-amber-500/20 outline-none">
+                    {% for val, label in main_status_choices %}
+                        <option value="{{ val }}" {% if main.status == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button class="w-7 h-7 bg-amber-600 hover:bg-amber-700 text-white rounded-lg flex items-center justify-center transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+            </form>
+        </td>
+        <td class="py-3 px-4 text-center">
+            <button type="button" class="bg-slate-800 hover:bg-amber-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase tracking-wide transition-colors"
+                hx-get="{% url 'maintenance_details_partial' main.id %}" hx-target="#modal-body">View</button>
+        </td>
+    </tr>
+    {% endfor %}
+{% empty %}
+    <tr><td colspan="7" class="py-16 text-center text-slate-400">No maintenance requests found.</td></tr>
+{% endfor %}

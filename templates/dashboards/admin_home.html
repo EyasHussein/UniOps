@@ -1,0 +1,649 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard — UniOps{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <div class="mb-8">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-500 mb-1">System Administration</p>
+        <div class="flex items-end justify-between flex-wrap gap-4">
+            <h1 class="text-3xl font-black text-slate-900">Campus Overview</h1>
+            <div class="text-right">
+                <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Signed in as</p>
+                <p class="text-lg font-black text-indigo-600 uppercase">{{ user_name }}</p>
+            </div>
+        </div>
+        <div class="mt-4 h-px bg-gradient-to-r from-indigo-200 via-violet-200 to-transparent"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <div class="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 rounded-2xl shadow-md">
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full"></div>
+            <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-lg">📅</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Bookings</span>
+                </div>
+                <div class="flex justify-between items-baseline border-b border-white/10 pb-2 mb-2">
+                    <span class="text-sm text-emerald-100">Total</span>
+                    <span class="text-2xl font-black">{{ total_bookings }}</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-sm text-amber-200 font-medium">Pending</span>
+                    <span class="text-xl font-black text-amber-200">{{ pending_bookings_count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative overflow-hidden bg-gradient-to-br from-rose-500 to-rose-700 text-white p-6 rounded-2xl shadow-md">
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full"></div>
+            <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-lg">⚠️</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-rose-200">Complaints</span>
+                </div>
+                <div class="flex justify-between items-baseline border-b border-white/10 pb-2 mb-2">
+                    <span class="text-sm text-rose-200">Total</span>
+                    <span class="text-2xl font-black">{{ total_complaints }}</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-sm text-amber-300 font-medium">Pending</span>
+                    <span class="text-xl font-black text-amber-300">{{ pending_count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-700 text-white p-6 rounded-2xl shadow-md">
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full"></div>
+            <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-lg">⚙️</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-amber-200">Maintenance</span>
+                </div>
+                <div class="flex justify-between items-baseline border-b border-white/10 pb-2 mb-2">
+                    <span class="text-sm text-amber-100">Total</span>
+                    <span class="text-2xl font-black">{{ total_maintenance }}</span>
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-sm text-yellow-200 font-medium">Pending</span>
+                    <span class="text-xl font-black text-yellow-200">{{ open_maintenance }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BOOKINGS TABLE (EMERALD / TEAL) ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-emerald-500 mb-0.5">Module</p>
+                <h2 class="text-lg font-black text-slate-900">Room Booking Requests</h2>
+            </div>
+            <form method="GET" class="flex gap-2">
+                <div class="relative">
+                    <input name="bq" value="{{ bq }}" placeholder="Search bookings..."
+                        class="pl-9 pr-4 py-2.5 text-sm bg-slate-100 border-2 border-slate-300 rounded-xl focus:ring-0 focus:border-emerald-400 focus:bg-white outline-none w-56 transition-all">
+                    <svg class="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">Search</button>
+            </form>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-emerald-50 text-xs uppercase tracking-widest text-emerald-700 border-b border-emerald-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">Faculty</th>
+                        <th class="py-3 px-4 font-bold text-left">Room / Date</th>
+                        <th class="py-3 px-4 font-bold text-left">Time Slot</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-left">Update Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup bookings by user as user_groups %}
+                    {% for group in user_groups %}
+                        <tr class="bg-emerald-50/60">
+                            <td colspan="8" class="py-2 px-4 text-xs font-black text-emerald-700 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 text-[10px] font-black">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for bk in group.list %}
+                        <tr class="hover:bg-emerald-50/30 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-emerald-100 text-emerald-700 text-xs font-black rounded-lg">#{{ bk.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-800">{{ bk.user.get_full_name|default:bk.user.username }}</div>
+                                <div class="text-xs text-slate-400">{{ bk.email }}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-800">{{ bk.classroom.room_name }}</div>
+                                <div class="text-xs text-slate-400">{{ bk.booking_date }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-xs text-slate-600">{{ bk.start_time|time:"H:i" }} – {{ bk.end_time|time:"H:i" }}</td>
+                            <td class="py-3 px-4 text-center">
+                                {% if bk.status == 'approved' %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Approved
+                                    </span>
+                                {% elif bk.status == 'rejected' %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>Rejected
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <form action="{% url 'update_booking_status' bk.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="approved">
+                                        <button class="bg-emerald-500 hover:bg-emerald-600 text-white p-1.5 rounded-lg transition-colors" title="Approve">✓</button>
+                                    </form>
+                                    <form action="{% url 'update_booking_status' bk.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="rejected">
+                                        <button class="bg-rose-500 hover:bg-rose-600 text-white p-1.5 rounded-lg transition-colors" title="Reject">✕</button>
+                                    </form>
+                                    <form action="{% url 'archive_booking' bk.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button class="bg-slate-200 hover:bg-slate-300 text-slate-600 p-1.5 rounded-lg transition-colors" title="Archive">🗑</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <form action="{% url 'update_booking_status' bk.id %}" method="POST" class="flex items-center gap-1.5">
+                                    {% csrf_token %}
+                                    <select name="new_status" class="text-xs bg-slate-100 border-2 border-slate-300 rounded-lg px-2 py-1.5 focus:border-emerald-400 focus:bg-white outline-none transition-all">
+                                        {% for val, label in booking_status_choices %}
+                                            <option value="{{ val }}" {% if bk.status == val %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="w-7 h-7 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg flex items-center justify-center transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-emerald-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'booking_details_partial' bk.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="8" class="py-14 text-center text-slate-400">No active booking requests.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== ARCHIVED BOOKINGS ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Archive</p>
+            <h2 class="text-lg font-black text-slate-900">Archived Booking Requests</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500 border-b border-slate-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">Faculty</th>
+                        <th class="py-3 px-4 font-bold text-left">Room / Date</th>
+                        <th class="py-3 px-4 font-bold text-left">Time Slot</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup archived_bookings by user as archived_booking_groups %}
+                    {% for group in archived_booking_groups %}
+                        <tr class="bg-slate-50">
+                            <td colspan="7" class="py-2 px-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-[10px]">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for bk in group.list %}
+                        <tr class="hover:bg-slate-50/60 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-slate-100 text-slate-600 text-xs font-black rounded-lg">#{{ bk.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-700">{{ bk.user.get_full_name|default:bk.user.username }}</div>
+                                <div class="text-xs text-slate-400">{{ bk.email }}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-semibold text-slate-700">{{ bk.classroom.room_name }}</span>
+                                <div class="text-xs text-slate-400 italic">{{ bk.booking_date }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-xs text-slate-500">{{ bk.start_time|time:"H:i" }} – {{ bk.end_time|time:"H:i" }}</td>
+                            <td class="py-3 px-4 text-center">
+                                {% if bk.status == "approved" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Approved
+                                    </span>
+                                {% elif bk.status == "rejected" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>Rejected
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">
+                                        {{ bk.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <form action="{% url 'restore_booking' bk.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button class="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Restore</button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-slate-900 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'booking_details_partial' bk.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="7" class="py-14 text-center text-slate-400">No archived booking requests.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== COMPLAINTS TABLE (ROSE) ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-rose-400 mb-0.5">Module</p>
+                <h2 class="text-lg font-black text-slate-900">All User Complaints</h2>
+            </div>
+            <form method="GET" class="flex gap-2">
+                <div class="relative">
+                    <input name="q" value="{{ q }}" placeholder="Search complaints..."
+                        class="pl-9 pr-4 py-2.5 text-sm bg-slate-100 border-2 border-slate-300 rounded-xl focus:ring-0 focus:border-rose-400 focus:bg-white outline-none w-56 transition-all">
+                    <svg class="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <button class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">Search</button>
+            </form>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-rose-50 text-xs uppercase tracking-widest text-rose-700 border-b border-rose-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">User</th>
+                        <th class="py-3 px-4 font-bold text-left">Type / Location</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-left">Update Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup complaints by user as user_groups %}
+                    {% for group in user_groups %}
+                        <tr class="bg-rose-50/60">
+                            <td colspan="7" class="py-2 px-4 text-xs font-black text-rose-600 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 text-[10px] font-black">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for com in group.list %}
+                        <tr class="hover:bg-rose-50/20 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-rose-100 text-rose-700 text-xs font-black rounded-lg">#{{ com.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-800">{{ com.user }}</div>
+                                <div class="text-xs text-slate-400">{{ com.email }}</div>
+                                <span class="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase">{{ com.user.role }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-semibold text-slate-800 capitalize">{{ com.complaint_type }}</span>
+                                <div class="text-xs text-slate-400 italic mt-0.5">{{ com.classroom }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if com.status == "pending" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending</span>
+                                {% elif com.status == "in_progress" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase"><span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>In Progress</span>
+                                {% elif com.status == "resolved" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Resolved</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <form action="{% url 'archive_complaint' com.id %}" method="POST" class="inline" onsubmit="return confirm('Archive this complaint?')">
+                                    {% csrf_token %}
+                                    <button class="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Archive</button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4">
+                                <form action="{% url 'update_complaint_status' com.id %}" method="POST" class="flex items-center gap-1.5">
+                                    {% csrf_token %}
+                                    <select name="new_status" class="text-xs bg-slate-100 border-2 border-slate-300 rounded-lg px-2 py-1.5 focus:border-rose-400 focus:bg-white outline-none transition-all">
+                                        {% for val, label in status_choices %}
+                                            <option value="{{ val }}" {% if com.status == val %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="w-7 h-7 bg-rose-500 hover:bg-rose-600 text-white rounded-lg flex items-center justify-center transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-rose-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'complaint_details_partial' com.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="7" class="py-14 text-center text-slate-400">No active complaints.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== ARCHIVED COMPLAINTS ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Archive</p>
+            <h2 class="text-lg font-black text-slate-900">Archived Complaints</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500 border-b border-slate-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">User Details</th>
+                        <th class="py-3 px-4 font-bold text-left">Type / Location</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup archived_complaints by user as archived_user_groups %}
+                    {% for group in archived_user_groups %}
+                        <tr class="bg-slate-50">
+                            <td colspan="6" class="py-2 px-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-[10px]">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for com in group.list %}
+                        <tr class="hover:bg-slate-50/60 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-slate-100 text-slate-600 text-xs font-black rounded-lg">#{{ com.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-700">{{ com.user }}</div>
+                                <div class="text-xs text-slate-400">{{ com.email }}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-semibold text-slate-700 capitalize">{{ com.complaint_type }}</span>
+                                <div class="text-xs text-slate-400 italic">{{ com.classroom }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if com.status == "resolved" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Resolved</span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">{{ com.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <form action="{% url 'restore_complaint' com.id %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <button class="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Restore</button>
+                                    </form>
+                                    <form action="{% url 'delete_complaint' com.id %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <button class="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-slate-900 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'complaint_details_partial' com.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="6" class="py-14 text-center text-slate-400">No archived complaints.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== MAINTENANCE TABLE (AMBER) ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-0.5">Module</p>
+                <h2 class="text-lg font-black text-slate-900">All Maintenance Requests</h2>
+            </div>
+            <form method="GET" class="flex gap-2">
+                <div class="relative">
+                    <input name="mq" value="{{ mq }}" placeholder="Search maintenance..."
+                        class="pl-9 pr-4 py-2.5 text-sm bg-slate-100 border-2 border-slate-300 rounded-xl focus:ring-0 focus:border-amber-400 focus:bg-white outline-none w-56 transition-all">
+                    <svg class="absolute left-3 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <button class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors">Search</button>
+            </form>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-amber-50 text-xs uppercase tracking-widest text-amber-700 border-b border-amber-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">Faculty</th>
+                        <th class="py-3 px-4 font-bold text-left">Type / Room</th>
+                        <th class="py-3 px-4 font-bold text-center">Priority</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-left">Update Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup maintenance_requests by user as maintenance_groups %}
+                    {% for group in maintenance_groups %}
+                        <tr class="bg-amber-50/60">
+                            <td colspan="8" class="py-2 px-4 text-xs font-black text-amber-700 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-[10px]">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for main in group.list %}
+                        <tr class="hover:bg-amber-50/20 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-amber-100 text-amber-700 text-xs font-black rounded-lg">#{{ main.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-800">{{ main.user }}</div>
+                                <div class="text-xs text-slate-400">{{ main.email }}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-semibold text-slate-800 capitalize">{{ main.maintenance_type }}</span>
+                                <div class="text-xs text-slate-400 italic mt-0.5">{{ main.classroom }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if main.priority == "high" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>High</span>
+                                {% elif main.priority == "medium" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Medium</span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Low</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if main.status == "pending" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">Pending</span>
+                                {% elif main.status == "assigned" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase">Assigned</span>
+                                {% elif main.status == "under repair" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-orange-50 text-orange-700 border border-orange-200 uppercase">Under Repair</span>
+                                {% elif main.status == "fixed" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">Fixed</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <form action="{% url 'archive_main' main.id %}" method="POST" class="inline" onsubmit="return confirm('Archive this request?')">
+                                    {% csrf_token %}
+                                    <button class="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Archive</button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4">
+                                <form action="{% url 'update_main_status' main.id %}" method="POST" class="flex items-center gap-1.5">
+                                    {% csrf_token %}
+                                    <select name="new_status" class="text-xs bg-slate-100 border-2 border-slate-300 rounded-lg px-2 py-1.5 focus:border-amber-400 focus:bg-white outline-none transition-all">
+                                        {% for val, label in main_status_choices %}
+                                            <option value="{{ val }}" {% if main.status == val %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="w-7 h-7 bg-amber-500 hover:bg-amber-600 text-white rounded-lg flex items-center justify-center transition-colors">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-amber-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'maintenance_details_partial' main.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="8" class="py-14 text-center text-slate-400">No active maintenance requests.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== ARCHIVED MAINTENANCE ===== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-100">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Archive</p>
+            <h2 class="text-lg font-black text-slate-900">Archived Maintenance Requests</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500 border-b border-slate-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">Faculty</th>
+                        <th class="py-3 px-4 font-bold text-left">Type / Room</th>
+                        <th class="py-3 px-4 font-bold text-center">Priority</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% regroup archived_main by user as archived_maintenance_groups %}
+                    {% for group in archived_maintenance_groups %}
+                        <tr class="bg-slate-50">
+                            <td colspan="7" class="py-2 px-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-[10px]">👤</span>
+                                    {% if group.grouper %}{{ group.grouper.username }}{% else %}Unknown User{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% for main in group.list %}
+                        <tr class="hover:bg-slate-50/60 transition-colors">
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center justify-center w-8 h-8 bg-slate-100 text-slate-600 text-xs font-black rounded-lg">#{{ main.id }}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-semibold text-slate-700">{{ main.user }}</div>
+                                <div class="text-xs text-slate-400">{{ main.email }}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="font-semibold text-slate-700 capitalize">{{ main.maintenance_type }}</span>
+                                <div class="text-xs text-slate-400 italic">{{ main.classroom }}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if main.priority == "high" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>High</span>
+                                {% elif main.priority == "medium" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Medium</span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Low</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                {% if main.status == "fixed" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">Fixed</span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">{{ main.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <form action="{% url 'restore_main' main.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button class="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Restore</button>
+                                </form>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button type="button" class="bg-slate-700 hover:bg-slate-900 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase transition-colors"
+                                    hx-get="{% url 'maintenance_details_partial' main.id %}" hx-target="#modal-body" hx-trigger="click">View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr><td colspan="7" class="py-14 text-center text-slate-400">No archived maintenance requests.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div id="details-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
+        <div id="modal-body" class="overflow-y-auto"></div>
+    </div>
+</div>
+
+<script>
+    document.body.addEventListener("htmx:afterSwap", function(e) {
+        if (e.detail.target.id === "modal-body") document.getElementById("details-modal").classList.replace("hidden","flex");
+    });
+    function closeDetailsModal() {
+        document.getElementById("details-modal").classList.replace("flex","hidden");
+        document.getElementById("modal-body").innerHTML = "";
+    }
+    document.getElementById("details-modal").addEventListener("click", function(e) {
+        if (e.target.id === "details-modal") closeDetailsModal();
+    });
+</script>
+{% endblock %}

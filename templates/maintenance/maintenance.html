@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block title %}Maintenance Request{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] bg-slate-200 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-3xl">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-600 mb-1">Facilities</p>
+            <h1 class="text-3xl font-black text-slate-900">
+                {% if is_edit %}Update Maintenance Request{% else %}Maintenance Request{% endif %}
+            </h1>
+            {% if not is_edit %}
+            <p class="text-slate-600 mt-1 font-medium">Report technical or facility issues that require repair.</p>
+            {% endif %}
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-3xl border border-slate-300 shadow-lg overflow-hidden">
+            <div class="h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600"></div>
+
+            <div class="p-8">
+                <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-medium">
+                            {{ form.non_field_errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Maintenance Type
+                                {% if form.maintenance_type.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.maintenance_type }}
+                            {% if form.maintenance_type.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.maintenance_type.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Room / Location
+                                {% if form.classroom.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.classroom }}
+                            {% if form.classroom.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.classroom.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                            Priority Level
+                            {% if form.priority.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                        </label>
+                        {{ form.priority }}
+                        {% if form.priority.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.priority.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                            Description
+                            {% if form.description.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.description.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-300 hover:border-amber-400 transition-colors p-5 rounded-xl bg-slate-50">
+                        <label class="block text-sm font-bold text-slate-800 mb-2">Photo (optional)</label>
+                        {{ form.photo }}
+                        {% if form.photo.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.photo.errors|striptags }}</p>
+                        {% endif %}
+                        <p class="text-xs text-slate-500 mt-2">Attach a photo to help describe the issue</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-4">
+                        <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg text-base">
+                            {% if is_edit %}Update Maintenance Request{% else %}Submit Maintenance Request →{% endif %}
+                        </button>
+    
+                        <a  href="{% url 'dashboard' %}"
+                            class=" bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-2xl transition-colors">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

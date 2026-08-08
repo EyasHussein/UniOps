@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}UniOps{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style>
+        html, body { margin: 0; padding: 0; }
+        body {
+            background-color: #dbe3ee;
+        }
+
+        nav {
+            border-bottom-color: #94a3b8 !important;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        main .bg-white {
+            border-color: #b8c4d6 !important;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        main .text-slate-500 {
+            color: #334155 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+    {% include "parts/loginnav.html" %}
+
+    <main class="min-h-screen pt-[64px] bg-slate-200">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if messages %}
+    <div class="fixed top-6 right-6 z-50 flex flex-col gap-3">
+        {% for message in messages %}
+        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center justify-between gap-6 text-sm font-medium"
+            hx-get="{% url 'empty_response' %}"
+            hx-trigger="load delay:5s"
+            hx-swap="delete">
+            {{ message|safe }}
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white ml-2 text-lg leading-none">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,50 @@
+{% regroup bookings by user as user_groups %}
+{% for group in user_groups %}
+    <tr class="bg-indigo-50/50">
+        <td colspan="6" class="py-2 px-4 text-xs font-black text-indigo-600 uppercase tracking-widest">
+            👤 {{ group.grouper.username }}
+        </td>
+    </tr>
+    {% for bk in group.list %}
+    <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-3 px-4 font-semibold text-slate-800">{{ bk.user.get_full_name|default:bk.user.username }}</td>
+        <td class="py-3 px-4">
+            <div class="font-bold">{{ bk.classroom.room_name }}</div>
+            <div class="text-xs text-slate-500">{{ bk.booking_date }}</div>
+        </td>
+        <td class="py-3 px-4 text-xs">{{ bk.start_time }} - {{ bk.end_time }}</td>
+        <td class="py-3 px-4 text-center">
+            <span class="px-2 py-1 rounded-full text-[10px] font-black uppercase
+                {% if bk.status == 'approved' %}bg-green-100 text-green-700
+                {% elif bk.status == 'rejected' %}bg-red-100 text-red-700
+                {% else %}bg-amber-100 text-amber-700{% endif %}">
+                {{ bk.status }}
+            </span>
+        </td>
+        <td class="py-3 px-4">
+            <div class="flex gap-1">
+                <form action="{% url 'update_booking_status' bk.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="approve">
+                    <button class="bg-emerald-500 text-white p-1.5 rounded-lg hover:bg-emerald-600">✓</button>
+                </form>
+                <form action="{% url 'update_booking_status' bk.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reject">
+                    <button class="bg-rose-500 text-white p-1.5 rounded-lg hover:bg-rose-600">✕</button>
+                </form>
+                <form action="{% url 'archive_booking' bk.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="bg-slate-200 text-slate-600 p-1.5 rounded-lg hover:bg-slate-300">🗑️</button>
+                </form>
+            </div>
+        </td>
+        <td class="py-3 px-4 text-center">
+            <button class="bg-slate-800 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase"
+                    hx-get="{% url 'booking_details_partial' bk.id %}" hx-target="#modal-body">View</button>
+        </td>
+    </tr>
+    {% endfor %}
+{% empty %}
+    <tr><td colspan="6" class="py-16 text-center text-slate-400">No active booking requests.</td></tr>
+{% endfor %}

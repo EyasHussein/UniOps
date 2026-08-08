@@ -1,0 +1,71 @@
+<div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+    <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-sky-500 mb-0.5">Complaint Details</p>
+        <h3 class="text-xl font-black text-slate-900">Complaint #{{ complaint.id }}</h3>
+    </div>
+    <button onclick="closeDetailsModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xl font-bold transition-colors">
+        ×
+    </button>
+</div>
+
+<div class="h-1.5 bg-gradient-to-r from-sky-500 via-cyan-500 to-sky-600"></div>
+
+<div class="p-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Complaint Type</p>
+            <p class="text-sm font-bold text-slate-900 capitalize">{{ complaint.complaint_type }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Room / Location</p>
+            <p class="text-sm font-bold text-slate-900">{{ complaint.classroom|default:"—" }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Status</p>
+
+        {% if complaint.status == "pending" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending
+            </span>
+        {% elif complaint.status == "in_progress" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>In Progress
+            </span>
+        {% elif complaint.status == "resolved" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Resolved
+            </span>
+        {% else %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">
+                {{ complaint.status }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Description</p>
+        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+            {{ complaint.description|default:"No description provided." }}
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Photo</p>
+        {% if complaint.photo %}
+            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-3">
+                <img src="{{ complaint.photo.url }}" alt="Complaint Photo" class="w-full max-h-[50vh] object-contain rounded-xl">
+            </div>
+        {% else %}
+            <p class="text-sm text-slate-400 italic">No photo uploaded.</p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-end pt-2">
+        <button onclick="closeDetailsModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors">
+            Close
+        </button>
+    </div>
+</div>

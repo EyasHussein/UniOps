@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}UniOps{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+    {% if user.is_authenticated %}
+        {% include "parts/top_nav.html" %}
+    {% else %}
+        {% include "parts/loginnav.html" %}
+    {% endif %}
+
+    <main class="min-h-screen pt-[74px]">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if messages %}
+    <div class="fixed top-6 right-6 z-50 flex flex-col gap-3">
+        {% for message in messages %}
+        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center justify-between gap-6 text-sm font-medium"
+            hx-get="{% url 'empty_response' %}"
+            hx-trigger="load delay:5s"
+            hx-swap="delete">
+            {{ message|safe }}
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white ml-2 text-lg leading-none">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>
+
+
+

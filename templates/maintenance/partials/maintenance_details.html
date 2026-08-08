@@ -1,0 +1,80 @@
+<div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+    <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-0.5">Maintenance Details</p>
+        <h3 class="text-xl font-black text-slate-900">Request #{{ main.id }}</h3>
+    </div>
+    <button onclick="closeDetailsModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xl font-bold transition-colors">
+        ×
+    </button>
+</div>
+
+<div class="h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600"></div>
+
+<div class="p-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Maintenance Type</p>
+            <p class="text-sm font-bold text-slate-900 capitalize">{{ main.maintenance_type }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Room / Location</p>
+            <p class="text-sm font-bold text-slate-900">{{ main.classroom|default:"—" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Priority</p>
+            <p class="text-sm font-bold text-slate-900 capitalize">{{ main.priority }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Status</p>
+
+            {% if main.status == "pending" %}
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending
+                </span>
+            {% elif main.status == "assigned" %}
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>Assigned
+                </span>
+            {% elif main.status == "under repair" %}
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-orange-50 text-orange-700 border border-orange-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-orange-400 rounded-full"></span>Under Repair
+                </span>
+            {% elif main.status == "fixed" %}
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Fixed
+                </span>
+            {% else %}
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">
+                    {{ main.status }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Description</p>
+        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+            {{ main.description|default:"No description provided." }}
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Photo</p>
+        {% if main.photo %}
+            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-3">
+                <img src="{{ main.photo.url }}" alt="Maintenance Photo" class="w-full max-h-[50vh] object-contain rounded-xl">
+            </div>
+        {% else %}
+            <p class="text-sm text-slate-400 italic">No photo uploaded.</p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-end pt-2">
+        <button onclick="closeDetailsModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors">
+            Close
+        </button>
+    </div>
+</div>

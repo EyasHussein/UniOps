@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}Submit Complaint{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] bg-slate-200 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-3xl">
+
+        <div class="mb-6">
+            <!-- CHANGED: complaints main accent changed from rose/red to sky -->
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-600 mb-1">Support</p>
+            <h1 class="text-3xl font-black text-slate-900">
+                {% if is_edit %}Update Complaint{% else %}Submit a Complaint{% endif %}
+            </h1>
+            {% if not is_edit %}
+            <p class="text-slate-600 mt-1 font-medium">Report a facility issue or campus concern below.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-300 shadow-lg overflow-hidden">
+            <!-- CHANGED: complaints top bar changed from rose gradient to sky gradient -->
+            <div class="h-1.5 bg-gradient-to-r from-sky-500 via-cyan-500 to-sky-600"></div>
+
+            <div class="p-8">
+                <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-rose-50 border border-cyan-500 text-rose-700 px-4 py-3 rounded-xl text-sm font-medium">
+                            {{ form.non_field_errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Complaint Type
+                                {% if form.complaint_type.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.complaint_type }}
+                            {% if form.complaint_type.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.complaint_type.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Room / Location
+                                {% if form.classroom.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.classroom }}
+                            {% if form.classroom.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.classroom.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                            Description
+                            {% if form.description.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.description.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- CHANGED: hover border changed from rose to sky -->
+                    <div class="border-2 border-dashed border-slate-300 hover:border-sky-400 transition-colors p-5 rounded-xl bg-slate-50">
+                        <label class="block text-sm font-bold text-slate-800 mb-2">Photo (optional)</label>
+                        {{ form.photo }}
+                        {% if form.photo.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.photo.errors|striptags }}</p>
+                        {% endif %}
+                        <p class="text-xs text-slate-500 mt-2">Attach a photo to help describe the issue</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-4">
+                        <!-- CHANGED: submit button changed from rose to sky -->
+                        <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg text-base">
+                            {% if is_edit %}Update Complaint{% else %}Submit Complaint →{% endif %}
+                        </button>
+
+                        <a href="{% url 'dashboard' %}"
+                           class="px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-all whitespace-nowrap">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

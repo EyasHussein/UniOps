@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+{% block title %}{% if room %}Update Room{% else %}Add Room{% endif %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] bg-slate-200 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-3xl">
+
+        <div class="mb-6">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 mb-1">Room Management</p>
+            <h1 class="text-3xl font-black text-slate-900">
+                {% if room %}Update Room{% else %}Add New Room{% endif %}
+            </h1>
+            <p class="text-slate-600 mt-1 font-medium">
+                {% if room %}
+                    Update the room details below.
+                {% else %}
+                    Fill in the room details below to create a new room.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-300 shadow-lg overflow-hidden">
+            <div class="h-1.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500"></div>
+
+            <div class="p-8">
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Building</label>
+                            {{ form.building }}
+                            {% if form.building.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.building.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Room Name</label>
+                            {{ form.room_name }}
+                            {% if form.room_name.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.room_name.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Room Type</label>
+                            {{ form.room_type }}
+                            {% if form.room_type.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.room_type.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Capacity</label>
+                            {{ form.capacity }}
+                            {% if form.capacity.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.capacity.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.status.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">Location / Floor</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.location.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">Equipment</label>
+                        {{ form.equipment }}
+                        {% if form.equipment.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.equipment.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+                            <p class="text-rose-600 text-sm font-semibold">{{ form.non_field_errors|striptags }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="flex items-center gap-3 pt-4">
+                        <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg text-base">
+                            {% if room %}Update Room{% else %}Save Room →{% endif %}
+                        </button>
+
+                        <a href="{% url 'rooms' %}"
+                            class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-2xl transition-colors">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

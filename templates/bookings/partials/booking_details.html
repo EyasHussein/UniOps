@@ -1,0 +1,87 @@
+<div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+    <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-emerald-500 mb-0.5">Booking Details</p>
+        <h3 class="text-xl font-black text-slate-900">Request #{{ booking.id }}</h3>
+    </div>
+    <button onclick="closeDetailsModal()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xl font-bold transition-colors">
+        ×
+    </button>
+</div>
+
+<div class="h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600"></div>
+
+<div class="p-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Requested By</p>
+            <p class="text-sm font-bold text-slate-900">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ booking.email|default:"No email" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Room</p>
+            <p class="text-sm font-bold text-slate-900">{{ booking.classroom.room_name }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ booking.classroom.building.name|default:"No building" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Date</p>
+            <p class="text-sm font-bold text-slate-900">{{ booking.booking_date }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Time</p>
+            <p class="text-sm font-bold text-slate-900">{{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Status</p>
+
+        {% if booking.status == "pending" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending
+            </span>
+        {% elif booking.status == "approved" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Approved
+            </span>
+        {% elif booking.status == "rejected" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase">
+                <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>Rejected
+            </span>
+        {% else %}
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black bg-slate-100 text-slate-600 border border-slate-200 uppercase">
+                {{ booking.status }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Purpose / Notes</p>
+        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+            {{ booking.notes|default:"No notes provided." }}
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Created At</p>
+            <p class="text-sm font-semibold text-slate-800">{{ booking.created_at|default:"—" }}</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Processed By</p>
+            <p class="text-sm font-semibold text-slate-800">{{ booking.processed_by|default:"Not processed yet" }}</p>
+            {% if booking.processed_at %}
+                <p class="text-xs text-slate-500 mt-1">{{ booking.processed_at }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="flex justify-end pt-2">
+        <button onclick="closeDetailsModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors">
+            Close
+        </button>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard — UniOps{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <div class="mb-8">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-500 mb-1">Student Portal</p>
+        <div class="flex items-end justify-between flex-wrap gap-4">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 leading-tight">Campus Overview</h1>
+                <p class="text-slate-500 mt-1">Room availability, bookings, and facility reporting.</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Welcome back</p>
+                <p class="text-lg font-black text-indigo-600 uppercase">{{ user_name }}</p>
+            </div>
+        </div>
+        <div class="mt-4 h-px bg-gradient-to-r from-indigo-200 via-violet-200 to-transparent"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        <a href="{% url 'rooms' %}" class="group flex items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all">
+            <div class="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors text-xl flex-shrink-0">🏫</div>
+            <div>
+                <h3 class="font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">Room Inventory</h3>
+                <p class="text-xs text-slate-500">View classrooms and their current status.</p>
+            </div>
+            <span class="ml-auto text-indigo-400 group-hover:text-indigo-600 text-lg font-bold group-hover:translate-x-1 transition-all">→</span>
+        </a>
+
+        <!-- CHANGED: complaints quick action changed from rose to sky -->
+        <a href="{% url 'complaints' %}" class="group flex items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all">
+            <div class="w-11 h-11 bg-sky-50 rounded-xl flex items-center justify-center group-hover:bg-sky-100 transition-colors text-xl flex-shrink-0">⚠️</div>
+            <div>
+                <h3 class="font-bold text-slate-900 group-hover:text-sky-700 transition-colors">Report Issue</h3>
+                <p class="text-xs text-slate-500">Submit complaints about rooms or facilities.</p>
+            </div>
+            <span class="ml-auto text-sky-400 group-hover:text-sky-600 text-lg font-bold group-hover:translate-x-1 transition-all">→</span>
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <!-- CHANGED: complaints section accent changed from rose to sky -->
+                <p class="text-xs font-bold uppercase tracking-widest text-sky-400 mb-0.5">Module</p>
+                <h2 class="text-lg font-black text-slate-900">Your Complaints</h2>
+            </div>
+            {% comment %} <a href="{% url 'complaints' %}" class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold py-2 px-4 rounded-xl transition-colors">
+                + New Complaint
+            </a> {% endcomment %}
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-sky-50 text-xs uppercase tracking-widest text-sky-700 border-b border-sky-100">
+                        <th class="py-3 px-4 font-bold text-left w-16">ID</th>
+                        <th class="py-3 px-4 font-bold text-left">Type / Location</th>
+                        <th class="py-3 px-4 font-bold text-center">Status</th>
+                        <th class="py-3 px-4 font-bold text-center">Actions</th>
+                        <th class="py-3 px-4 font-bold text-center">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for com in complaints %}
+                    <tr class="hover:bg-sky-50/40 transition-colors">
+                        <td class="py-3 px-4">
+                            <span class="inline-flex items-center justify-center w-8 h-8 bg-sky-100 text-sky-700 text-xs font-black rounded-lg">#{{ com.id }}</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="block font-semibold text-slate-800 capitalize">{{ com.complaint_type }}</span>
+                            <span class="text-xs text-slate-400">{{ com.classroom|default:"—" }}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            {% if com.status == "pending" %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending</span>
+                            {% elif com.status == "in_progress" %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200 uppercase"><span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>In Progress</span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Resolved</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                {% if com.status == 'pending' %}
+                                    <a href="{% url 'edit_complaint' com.id %}" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Edit</a>
+                                    <span class="text-slate-300">/</span>
+                                {% else %}
+                                    <span class="text-[10px] text-slate-400 italic">only in pending /</span>
+                                {% endif %}
+                                
+                                {% if com.status == "resolved" %}
+                                    <form action="{% url 'archive_complaint' com.id %}" method="POST" class="inline" onsubmit="return confirm('Archive this complaint?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black py-1.5 px-3 rounded-lg uppercase transition-colors">Remove</button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-[10px] text-slate-400 italic">Locked Until Resolved</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button
+                                type="button"
+                                class="bg-slate-800 hover:bg-sky-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg uppercase tracking-wide transition-colors"
+                                hx-get="{% url 'complaint_details_partial' com.id %}"
+                                hx-target="#modal-body"
+                                hx-trigger="click"
+                            >
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="py-16 text-center text-slate-400 italic">No complaints found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="details-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div id="modal-body" class="overflow-y-auto"></div>
+    </div>
+</div>
+
+<script>
+    document.body.addEventListener("htmx:afterSwap", function (event) {
+        if (event.detail.target.id === "modal-body") {
+            const modal = document.getElementById("details-modal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+    });
+
+    function closeDetailsModal() {
+        const modal = document.getElementById("details-modal");
+        const modalBody = document.getElementById("modal-body");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        modalBody.innerHTML = "";
+    }
+
+    document.getElementById("details-modal").addEventListener("click", function (e) {
+        if (e.target.id === "details-modal") {
+            closeDetailsModal();
+        }
+    });
+</script>
+{% endblock %}

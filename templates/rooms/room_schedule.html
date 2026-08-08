@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block title %}Room Schedule{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-10">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+        <div>
+            {% if room.building %}
+                <a href="{% url 'building_rooms' room.building.id %}" class="text-sm font-bold text-indigo-600 hover:text-indigo-800">&larr; Back to {{ room.building.name }}</a>
+            {% else %}
+                <a href="{% url 'rooms' %}" class="text-sm font-bold text-indigo-600 hover:text-indigo-800">&larr; Back to Buildings</a>
+            {% endif %}
+            <h1 class="text-3xl font-black text-slate-900 mt-2">Room {{ room.room_name }} Schedule</h1>
+            <p class="text-slate-500 mt-2">
+                {{ room.building.name|default:"No Building" }} &bull; {{ selected_date }}
+            </p>
+        </div>
+
+        <form method="GET" class="flex flex-wrap items-center gap-2">
+            <a href="?date={{ prev_date }}&interval={{ slot_minutes }}" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Prev Day</a>
+            <input
+                type="date"
+                name="date"
+                value="{{ selected_date_input }}"
+                class="px-3 py-2 rounded-xl border-2 border-slate-300 bg-white text-slate-800 outline-none focus:border-indigo-400"
+            >
+            <select
+                name="interval"
+                class="px-3 py-2 rounded-xl border-2 border-slate-300 bg-white text-slate-800 outline-none focus:border-indigo-400"
+            >
+                <option value="30" {% if slot_minutes == 30 %}selected{% endif %}>30 min</option>
+                <option value="60" {% if slot_minutes == 60 %}selected{% endif %}>60 min</option>
+            </select>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold">Go</button>
+            <a href="?date={{ next_date }}&interval={{ slot_minutes }}" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">Next Day</a>
+        </form>
+    </div>
+
+    {% if not is_room_bookable %}
+        <div class="mb-5 rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-slate-700 text-sm font-medium">
+            <strong>Not Bookable:</strong> {{ room_non_bookable_reason }}
+        </div>
+    {% endif %}
+
+    {% if is_room_under_maintenance %}
+        <div class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm font-medium">
+            This room is currently marked as <strong>Under Maintenance</strong> in room settings.
+            Status is still shown below by selected day and time.
+        </div>
+    {% endif %}
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100">
+            <h2 class="text-lg font-black text-slate-900">Schedule Grid (08:00 - 17:00)</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-600 border-b border-slate-100">
+                        <th class="py-3 px-4 text-left font-bold">Time</th>
+                        <th class="py-3 px-4 text-left font-bold">Status</th>
+                        {% if request.user.role == "admin" %}
+                            <th class="py-3 px-4 text-left font-bold">Details</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for slot in hourly_slots %}
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td class="py-3 px-4 font-semibold text-slate-800">
+                                {{ slot.slot_start|time:"H:i" }} - {{ slot.slot_end|time:"H:i" }}
+                            </td>
+                            <td class="py-3 px-4">
+                                {% if slot.status == "available" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>Available
+                                    </span>
+                                {% elif slot.status == "occupied" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>Occupied
+                                    </span>
+                                {% elif slot.status == "maintenance" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-rose-400 rounded-full"></span>Under Maintenance
+                                    </span>
+                                {% elif slot.status == "not_bookable" %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-300 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>Not Bookable
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 uppercase">
+                                        <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+                            {% if request.user.role == "admin" %}
+                                <td class="py-3 px-4 text-slate-600">
+                                    {% if slot.status == "not_bookable" %}
+                                        <div class="mb-1 text-slate-700 font-medium">
+                                            {{ room_non_bookable_reason }}
+                                        </div>
+                                    {% elif slot.status == "maintenance" %}
+                                        <div class="mb-1 text-rose-700 font-medium">
+                                            Maintenance: {{ slot.maintenance_start|time:"H:i" }} - {{ slot.maintenance_end|time:"H:i" }}
+                                        </div>
+                                    {% elif slot.bookings %}
+                                        {% for booking in slot.bookings %}
+                                            <div class="mb-1">
+                                                #{{ booking.id }} | {{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }} | {{ booking.user.username }} | {{ booking.get_status_display }}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-slate-400 italic">No booking in this slot.</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if request.user.role == "faculty" or request.user.role == "admin" %}
+        <div class="mt-5">
+            {% if is_room_bookable %}
+                <a href="{% url 'bookings' %}?room={{ room.id }}" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-2xl transition-colors">
+                    Book This Room
+                </a>
+            {% else %}
+                <div class="inline-flex items-center justify-center bg-slate-200 text-slate-500 font-bold px-5 py-3 rounded-2xl">
+                    Not Bookable
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

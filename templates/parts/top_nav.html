@@ -1,0 +1,54 @@
+﻿{% load static %}
+{% with current=request.resolver_match.url_name %}
+<nav class="fixed inset-x-0 top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-300 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3 sm:gap-4 justify-between">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5">
+            <img src="{% static 'images/uniops-logo.png' %}" alt="UniOps logo" class="w-9 h-9 rounded-xl object-cover shadow-sm flex-shrink-0">
+            <div>
+                <div class="text-lg font-black text-slate-900 leading-none">UniOps</div>
+                <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-widest mt-0.5">Campus System</div>
+            </div>
+        </a>
+
+        <div class="flex flex-wrap items-center gap-2 text-sm font-semibold">
+            <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-lg transition-colors {% if current == 'dashboard' %}bg-indigo-100 text-indigo-800{% else %}text-slate-700 hover:bg-slate-200 hover:text-slate-900{% endif %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'rooms' %}" class="px-3 py-2 rounded-lg transition-colors {% if current == 'rooms' or current == 'building_rooms' or current == 'add_room' or current == 'update_room' or current == 'room_schedule' %}bg-slate-200 text-slate-900{% else %}text-slate-700 hover:bg-slate-200 hover:text-slate-900{% endif %}">
+                Rooms
+            </a>
+
+            {% if user.role == 'admin' or user.role == 'faculty' %}
+            <a href="{% url 'bookings' %}" class="px-3 py-2 rounded-lg transition-colors {% if current == 'bookings' %}bg-indigo-100 text-indigo-800{% else %}text-slate-700 hover:bg-slate-200 hover:text-slate-900{% endif %}">
+                Bookings
+            </a>
+            {% endif %}
+
+            <a href="{% url 'complaints' %}" class="px-3 py-2 rounded-lg transition-colors {% if current == 'complaints' %}bg-sky-100 text-sky-800{% else %}text-slate-700 hover:bg-slate-200 hover:text-slate-900{% endif %}">
+                Complaints
+            </a>
+
+            {% if user.role == 'admin' or user.role == 'faculty' %}
+            <a href="{% url 'maintenance' %}" class="px-3 py-2 rounded-lg transition-colors {% if current == 'maintenance' %}bg-amber-100 text-amber-800{% else %}text-slate-700 hover:bg-slate-200 hover:text-slate-900{% endif %}">
+                Maintenance
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3 ml-auto sm:ml-0">
+            <div class="hidden sm:block text-right">
+                <div class="text-sm font-bold text-slate-900 leading-none">{{ user.username }}</div>
+                <div class="text-[10px] text-slate-600 uppercase tracking-wider mt-1">{{ user.role }}</div>
+            </div>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-rose-100 hover:text-rose-700 transition-colors">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+{% endwith %}
+

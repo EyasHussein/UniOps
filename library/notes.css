@@ -1,0 +1,490 @@
+/*~ set the Vertual enviroment ( Creates an isolated Python environment for your Django project so dependencies don't conflict with other projects.)*/
+
+/*
+*  py -m venv .venv 
+^the .venv is the name of the enviroment folder 
+? to create the enve file    
+
+* .venv\Scripts\activate.bat   
+? to activet the enviroment 
+
+* py -m pip install Django    
+? to install django  
+
+* py -m pip install -U pip    
+? to Upgrade/Update django    
+
+*/
+
+/*
+* pip freeze > requirements.txt [to store all the dawnloadable pip (pakages)]
+* pip install -r requirements.txt [to user them the next time]
+*/
+
+/*~  to start django on the eviroment   */
+
+/* 
+* django-admin startproject myproject 
+^  myproject is the name of it    
+?  creats 2 projects folders outside the .venv folder (in the main folder)    
+
+*  cd myproject   
+^  the outer one 
+*/
+
+
+/*~  URLS AND VIEWS*/
+
+/*
+* 1) Make a views file (views.py) 
+    ! in VIEWS
+    * A) from django.http import HttpResponse
+    * B) Make functions for the pages you want
+    & Ex:
+    &{
+
+        from django.http import HttpResponse
+
+        def homepage(request):
+            return HttpResponse("Home Page")
+        def about(rewuest):
+            return HttpResponse("About Page")
+    &}
+
+    ! in URLS 
+    * A) from . import views (. is this dirictory [inner myproject]
+    * B) make URL for that page
+    & Ex:
+    &{
+        from django.contrib import admin
+        from django.urls import path
+        from . import views
+
+        urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('', views.homepage),
+            path('about/', views.about)
+        ]
+    &}
+*/
+
+/*~ TEMPLATES */
+
+/*
+? create a Templates in the outter myproject folder
+? then make html files in it
+
+! go to
+& A) settings.py and :
+* 1) scroll to Templates list
+* 2) put the templates directuy in DIRS 
+    ^[os.path.join(BASE_DIR, 'templates')]
+
+& B) views.py
+* 1) put {[(from django.shortcuts import render)]} 
+todo this will render the pages when click on an ancertage (link)
+* 2) put return render(request, 'home.html') to return what Html file you requsted
+todo the request is the parameter you named in the function
+
+*/
+
+/*~ STATIC FOLDERS FOR CSS AND JAVASCRIPT */
+/* 
+? create a static in the outter myproject folder
+? create CSS folder in the static and create a file in it
+
+! go to
+& A) settings.py and :
+
+^ to connect the the static and templates (html and css) together
+
+* 1) make import os in the top
+* 2) in the bottom under STATIC_URL put :
+            STATICFILES_DIRS = [
+            os.path.join(BASE_DIR, 'static')
+        ]
+
+* 3) in the top of the html {% load static %}
+
+! for CSS
+
+* 4) <link rel="stylesheet" href="{% static 'css/style.css ' %}">
+
+! for JS
+* 4) <script src="{% static 'js/script.js' %}" defer></script>
+    todo the defer is to make the js load after the pages loaded 
+*/
+
+/*~ APPS */
+
+/* 
+? you can take an app from a Django project and put it in a different one
+*1)
+? in terminal 
+* py manage.py startapp (name it)
+
+*2) in settings go to INSTALLED_APPS and put the name of the app you created 
+
+*3) create a Templates directory for the app 
+    inside it make a folder calld post (the name of the app you created)
+
+*4) in to make the html (!) work in a django file 
+    a) press ctrl+,
+    b) type emmet in the search
+    c) go to Emmet:include languesges 
+    d) in the key type django-html and in the value type html
+
+*5) make a usrls file inside the app you created and then copy the imporst and the urls from the root to the app 
+    !views.py / post
+    from django.shortcuts import render
+
+    # Create your views here.
+    def post_list(request):
+        return render(request, 'post/post_list.html')
+
+
+    !urls.py / post
+    from django.urls import path
+    from . import views
+
+    urlpatterns = [
+        path('', views.post_list), # home page inside post
+    ]
+! linking the app to the main urls
+*6) 
+& a) put incloud beside path in the import
+    from django.urls import path, include
+
+& b) then put :
+    path('post/', include('post.urls'))
+
+*7) make a layout for your Html pages
+*/
+
+/*~ Models and Migrations*/
+
+/*
+? Models modeled data and each type of data is going to have a table in a Database 
+? what the Migration do is taking the python code clases and represnt it in the Database like posts or users etc.. 
+
+*1) creat a modle (class) in models.py
+&Ex:
+    class Post(models.Model):
+    title = models.CharField(max_length= 75) #* varchar(75)
+    body = models.TextField() #* text area
+    slug = models.SlugField()
+    date = models.DateField(auto_now_add = True) #* autmatic date and time
+
+*2) add the built in Migrations
+    py manage.py migrate
+
+    * to make migration for the classes you add before you mirate
+        py manage.py makemigrations
+
+    ? dajango will keep traking these migrations ([0001] for post class) it gives it a number
+        post\migrations\0001_initial.py 
+
+    * when creating a class it adds a .py folder in migrartion folder to send the migration to a Database
+        py manage.py migrate
+        ^ on every change i have to send the migrate again to the Database by the command up ^
+*/
+
+/*~ django ORM */
+
+/*
+Object relational mapping (in terminal)
+
+? it's intermediary between the database and our python code
+? execite somthing in our python code and carries it out that action on the database
+
+& in terminal 
+*1) py manage.py shell
+    ^ opens InteractiveConsole
+*2) to work with the class model we created 
+    ^ from AppName.models import the class in models name
+    Ex : from post.models import Post
+
+*3) make an instance from the model
+    ^ p = Post()
+
+*4) make a title for exxample 
+    ^ p.title = "My First Post!"
+    ? this makes an opject from the post and you can make another by putting different titles or fields 
+    
+*5) save it
+    ^ p.save()
+
+*6) to show all the objects (Query set of objects) 
+    ^ model.objects.all()
+    Post.objects.all()
+
+*7) to exit
+    ^ exit()
+*/
+
+/*~ ADMIN */
+
+/*
+*1) create a super user (that can access the admin) and password
+    & in terminal type
+    ^ py manage.py createsuperuser
+    *a) put any user name
+    *b) skip the email
+    *c) make an 8 charecter or longer and not repetable(testtest) password
+
+user: eyas
+pass: 1234
+
+& put the class modle in the damin 
+*1) from .models import (class name)
+*2) admin.site.register(class name)
+*3) make migration in the Terminal
+    ^a) py manage.py makemigrations  
+    ^b) py manage.py migrate  
+*/
+
+/*~ VIEW THE CLASSES IN ADMIN ON THE SITE */
+
+/*
+*1) make a Folder for the app in the Templates 
+*2) make 2 html files and extend the layout.html
+*3) make the views and the urls for them  (in the same app folder)
+*4) I want to put the content in the database aka[Models] in the views so I have to import it in the views
+    ^from .models import (class name)
+*5) to get all the objects you created in the admin panel
+    ^[in views]
+    ^{'pro' : Product.objects.all()}
+*6) make a for loop on the objects in the html
+&    {% block content %}
+
+&    {% for p in pro %}
+&        <h1> {{p.name}} </h1>
+&        <h1> {{p.content}} </h1>
+&        <h1>{{p.price}}</h1>
+&        <h1> {{p.active}} </h1>
+&    {% endfor %}
+
+&    {% endblock  %}
+*/
+
+/*~ to name the objects in the admin pannel */
+/*
+*1) go to models in the app
+*2) tyoe 
+    def __str__(self):
+        return {self.name}
+
+    class Meta:
+        verbose_name = 'Product'
+        ordering = ['price']
+
+*/
+
+/*~ Models Methods */
+/*
+*1) default : 
+defualt = 'Eyas'
+default = "photos/20/10/25/cat.png" 
+    ^like defualt picturs for new users in the app (facebook/instagram) that did not put a photo yet or the class room without a photo
+
+*2) null & blank
+    null = True / blank = True
+    ^ null for database and blank that the filde is not required
+
+*3) verbose_name = (any name)
+    name = models.CharFiled(max_length = 50, verbose_name = 'Title')
+    ^ to change the columns name (in the admin panel)
+
+*4)choises =
+    & inside the model class
+    x = [
+        ("phone", 'Phone'),
+        ('computer', 'Computer'),
+    ]
+    categoty = models.CharField(max_length=50, blank=True, null=True, choices=x)
+    ^ to create a list of categories 
+*5) to make the created_at
+    from datetime import datetime
+    created_at = models.DateTimeField(default= datetime.now)
+*/
+
+/*~ MAKE RELATIONS BETWEEN MODELS */
+
+/*
+! one to one
+class Female(models.Model):
+    name_female = models.CharField(max_length=50, null=True)
+    # age = models.IntegerField(max_length=2)
+    def __str__(self):
+        return self.name_female
+
+class Male(models.Model):
+    name_male = models.CharField(max_length=50, null=True)
+    girls = models.OneToOneField(Female, on_delete=models.CASCADE) 
+    * CASCADE = if I delete this male do you want to delete the female too? 
+    * PORTECT = to not delete the female when the male is deleted
+    def __str__(self):
+        return f'{self.name_male} - {self.girls}'
+
+
+! one to many [Shopping Cart]
+class Product(models.Model):
+    title = models.CharField(max_length=100, null=True)
+    def __str__(self):
+        return self.title
+
+class User(models.Model):
+    name = models.CharField(max_length=50, null=True)
+    cart = models.ForeignKey(Product, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.name} - {self.cart}'
+
+
+! many to many [For videos]
+class Video(models.Model):
+    title = models.CharField(max_length=100, null=True)
+    def __str__(self):
+        return self.title
+
+class UserVideo(models.Model):
+    name = models.CharField(max_length=50, null=True)
+    watch = models.ManyToManyField(Video, null=True) #* no on delete
+    def __str__(self):
+        return f'{self.name} - {self.watch} / '
+*/
+
+
+/*~ QUERY SET BY GET AND FILTER AND ALL */
+
+/*
+
+*1) (ModelName).objects.all()
+    ^ loop on each object in the database and get them all
+
+*2) (ModelName).objects.filter(peice = 10)
+    ^ loop on each object in the database and get the filtered one
+    & if it blank it will be like the all
+
+*3) Product.objects.get(id = 2)
+    ^Imeaditly get the object (no loop) 
+
+*/
+
+/*~ query set exclude and order by and count objects */
+
+/*
+*1) order by 
+    ^ make for every page it's own order
+        & in views
+        pro= Product.objects.filter()
+        product = {'pro' : pro.order_by('-price')}
+
+*2) count
+    ^ it shows how many objects are in the database
+        def products(request):
+            pro= Product.objects.filter()    
+            product = {'pro_count' : str(pro.count()), 'pro' : pro}
+            return render(request, 'products/products.html', product)
+*3) exclude
+    ^ to exclude object in the database from shoing in in pn the site
+        def products(request):
+            pro= Product.objects.filter()
+            pro = pro.exclude(price = 10)    
+            product = {'pro_count' : str(pro.count()), 'pro' : pro,}
+            return render(request, 'products/products.html', product)
+*/
+
+
+/*~ query set range and in and exact */
+/*
+
+
+
+
+*/
+
+
+
+/*~ MEDIA */
+
+/*
+*1) in settings
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'
+
+*2) in the project URLS
+    &a) imports
+        from django.conf import settings
+        from django.conf.urls.static import static
+    &b) the + static at the rnd of urlpatterns
+        + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+*3) when adding a photo it should be like this 
+    <img src="{{p.image.url}}" alt="">
+
+*4) now when adding new photo to the database it will create media folder with the images in it
+*/
+
+/*! three ways to make forms in django */
+
+/*~ 1) CREATE LOGIN FORM FROM A-Z */
+
+/*
+! 3 steps
+
+*1) make the form in the templates
+    <form method="POST">
+        & {% csrf_token %}  to protect the token  
+        
+        <br>
+        <input type="text" placeholder="username" name="username">
+        
+        & {name:value} 
+        & {username : value from the user} 
+        
+        <br>
+        <input type="password" placeholder= 'password' name ='password'>
+        <br>
+        <input type="submit" value="save">
+    </form>
+*2) make the database in the models for the data
+    ^ in models
+    class Login(models.Model):
+        username = models.CharField(max_length=50)
+        password = models.CharField(max_length=8)
+    ^ in admin
+    def __str__(self):
+        return f"{self.username} - {self.password}"
+
+    @admin.register(Login)
+
+    class LoginAdmin(admin.ModelAdmin):
+        list_display = ('username', 'password')
+
+*3) make a views in it
+
+    from .models import Login
+    
+    def about(request):
+        username = request.POST.get('username') #[to get the info from the input that the user wrote it]
+        password = request.POST.get('password') #[to get the info from the input that the user wrote it]
+    
+        data = Login(username = username, password = password)
+        data.save()
+
+
+*/
+
+/*~ 2) forms by django form */
+
+/*
+
+*1) make the form.py in the app folder
+
+*/
+
+
+
+
+
+

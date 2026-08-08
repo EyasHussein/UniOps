@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {% if is_edit %}Edit Booking{% else %}New Booking Request{% endif %}
+{% endblock title %}
+
+{% block content %}
+<div class="min-h-[85vh] bg-slate-200 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-3xl">
+
+        <div class="mb-6">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600 mb-1">Reservations</p>
+            <h1 class="text-3xl font-black text-slate-900">
+                {% if is_edit %}Update Booking Request{% else %}Room Booking Request{% endif %}
+            </h1>
+            {% if not is_edit %}
+            <p class="text-slate-600 mt-1 font-medium">Reserve a classroom for lectures, meetings, or academic activities.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-300 shadow-lg overflow-hidden">
+            <div class="h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600"></div>
+
+            <div class="p-8">
+                <div class="mb-6 border-2 border-dashed border-slate-300 hover:border-emerald-400 transition-colors p-5 rounded-xl bg-slate-50">
+                    <h4 class="text-sm font-black uppercase tracking-widest text-emerald-700 mb-3">Booking Rules</h4>
+                    <ul class="text-sm text-slate-600 space-y-1.5 list-disc pl-5">
+                        <li>Bookings are allowed only between <strong>08:00 AM</strong> and <strong>05:00 PM</strong>.</li>
+                        <li>Use <strong>30-minute steps</strong> (for example: 09:00, 09:30, 10:00).</li>
+                        <li>Booking date cannot be in the past.</li>
+                        <li>Requests are checked for time conflicts with approved bookings.</li>
+                        <li>Rooms under maintenance cannot be reserved.</li>
+                        <li>Library and cafeteria spaces are visible but cannot be booked as classrooms.</li>
+                    </ul>
+                </div>
+
+                <form method="post" novalidate class="space-y-6">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-medium">
+                            {{ form.non_field_errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            {% if selected_room and not is_edit %}
+                                <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                    Selected Classroom
+                                    {% if form.classroom.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                                </label>
+                                <input type="hidden" name="classroom" value="{{ selected_room.id }}">
+                                <div class="w-full border border-emerald-300 rounded-2xl px-4 py-3 bg-emerald-50 text-emerald-800 font-semibold">
+                                    {{ selected_room.room_name }}{% if selected_room.building %} - {{ selected_room.building.name }}{% endif %}
+                                </div>
+                                {% if form.classroom.errors %}
+                                    <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.classroom.errors|striptags }}</p>
+                                {% endif %}
+                            {% else %}
+                                <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                    Select Classroom
+                                    {% if form.classroom.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                                </label>
+                                {{ form.classroom }}
+                                {% if form.classroom.errors %}
+                                    <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.classroom.errors|striptags }}</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Reservation Date
+                                {% if form.booking_date.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.booking_date }}
+                            {% if form.booking_date.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.booking_date.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                Start Time
+                                {% if form.start_time.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.start_time }}
+                            {% if form.start_time.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.start_time.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                End Time
+                                {% if form.end_time.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            {{ form.end_time }}
+                            {% if form.end_time.errors %}
+                                <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.end_time.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                            Notes / Purpose of Booking
+                            {% if form.notes.field.required %}<span class="text-rose-500">*</span>{% endif %}
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <p class="text-rose-500 text-xs mt-1.5 font-semibold">{{ form.notes.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-4">
+                        <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg text-base">
+                            {% if is_edit %}Update Booking Request{% else %}Submit Booking Request &rarr;{% endif %}
+                        </button>
+
+                        <a href="{% url 'rooms' %}"
+                           class="px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-all whitespace-nowrap">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
