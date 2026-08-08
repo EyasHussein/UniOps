@@ -43,12 +43,31 @@ This project is actively maintained. Recent architectural improvements include:
 
 ## Local Setup & Installation
 
-```bash
-git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/uniops.git)
-cd uniops
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
+
+## Clone the repository
+    ```bash
+    git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/ uniops.git)
+    cd uniops
+    ```
+1. ## Create and activate a virtual environment
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+2. ## Install dependencies
+    ```bash
+    pip install -r requirements.txt
+    ```
+3. ## Database Setup
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
+4. ## Create a superuser
+    ```bash
+    python manage.py createsuperuser
+    ```
+5. ## Start the server
+    ```bash
+    python manage.py runserver
+    ```
