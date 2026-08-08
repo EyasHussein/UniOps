@@ -61,12 +61,13 @@ This project is actively maintained. Recent architectural improvements include:
    ```bash
    git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/uniops.git)
    cd uniops
+    ```
 
-## Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+2. **Create and activate a virtual environment:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 Install dependencies:
 pip install -r requirements.txt
 
