@@ -43,12 +43,6 @@ This project is actively maintained. Recent architectural improvements include:
 
 ## Local Setup & Installation
 
-
-## Clone the repository
-    ```bash
-    git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/ uniops.git)
-    cd uniops
-    ```
 1. ## Create and activate a virtual environment
     ```bash
     python -m venv venv
@@ -70,4 +64,10 @@ This project is actively maintained. Recent architectural improvements include:
 5. ## Start the server
     ```bash
     python manage.py runserver
+    ```
+
+## Clone the repository
+    ```bash
+    git clone [https://github.com/yourusername/uniops.git](https://github.com/yourusername/ uniops.git)
+    cd uniops
     ```
